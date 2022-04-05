@@ -1,8 +1,9 @@
 const http = require('http');
 const MongoClient = require('mongodb').MongoClient;
-// var url = 'mongodb://localhost:27017/'
-var url = 'mongodb+srv://neetinnegi:neetinnegi@cluster0.tyxfy.mongodb.net/'
+require("dotenv").config();
+var url = process.env.DB;
 var formidable = require('formidable');
+const { dataValidation, emailvalidation,imagevalidation}  = require('./validation')
 
 const requestHandler = (req,res) => {
     // console.log(jsonParser);
@@ -12,17 +13,25 @@ const requestHandler = (req,res) => {
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type','multipart/form-data') 
     if(req.method === "POST"){
-      console.log("hi");
       const form = formidable({ multiples: true });
 
       form.parse(req, (err, fields, files) => {  
-        console.log(fields);
-        console.log(files);
       if (err) {
         res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
         res.end(String(err));
         return;
       }
+      console.log(fields)
+      let first_name = fields.first_name;
+      let last_name = fields.last_name;
+      let age = fields.age;
+      let email = fields.email;
+      let imageType = files.file.mimetype;
+
+      //function to validate the data and files
+      console.log(dataValidation(first_name,last_name,age));
+    
+      console.log(imagevalidation(imageType));
       MongoClient.connect(url,function(err,db){
         if(err) throw err;
         var dbo = db.db('mydb');
@@ -30,21 +39,36 @@ const requestHandler = (req,res) => {
           image : files,
           field :fields
         }
-        if(data.image){
-          return dbo.collection('user').insertOne(data,
-            function(err,result){
-              if(err) throw err;
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              console.log(result)
+          const User =  dbo.collection('user')
+          console.log(emailvalidation(email,User))
+          User.findOne({email : email},function(err,user){
+            if(err){
+               console.log(err)
             }
-            )
-        }
+            else if(user){
+                console.log(user)
+              // var err = new Error('A user with that email has already registers')
+              // err.status = 400;
+              // return next(err);
+            }else{
+               User.insertOne(data,
+                function(err,result){
+                  if(err) throw err;
+                  res.writeHead(200, { 'Content-Type': 'application/json' });
+                  console.log(result)
+                }
+                )
+                res.end(JSON.stringify({ fields, files }, null, 2));
+            }
+          })
+          
       
-      res.end(JSON.stringify({ fields, files }, null, 2));
+      
+     
       })      
     });
       }
-      else{
+      else if(req.method === 'GET'){
         console.log('GET request');
         MongoClient.connect(url,function(err,db){
           if(err) throw err;
@@ -54,10 +78,12 @@ const requestHandler = (req,res) => {
               if(err) throw err;   
               res.writeHead(200,{'Content-Type':'application/json'})         
               res.end(JSON.stringify(result))
-              console.log(result)           
+              // console.log(result)           
             }) 
           }      
         })    
+      }else{
+        return "Only POST and GET request can be called"
       }
 }
 

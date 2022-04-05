@@ -114,6 +114,15 @@ main{
     border-radius: 15px;
 }
 
+.container .message{
+    margin-bottom: 20px;
+    color:white;
+    margin-top: 0px;
+}
+
+.container .member{
+    margin-bottom: 20px;
+}
 
 
 

@@ -59,7 +59,8 @@
             <div class="container">
                 <h4>START FOR FREE</h4>
                 <h1>Create new account<span class="dot">.</span></h1>
-                <p>Already A Memeber? <span class="log">Log In</span></p>
+                <p class="member">Already A Memeber? <span class="log">Log In</span></p>
+                <p class="message" id="message"></p>
                 <form>
                     <div class="first-name">
                         <div class="input">
@@ -179,11 +180,20 @@
     
                         xhttp.onreadystatechange = function () {
                             if (this.readyState == 4 && this.status == 200) {
-                                alert('Insert successfully')
+                                // alert('Insert successfully');
+                                document.getElementById('message').innerHTML = 'User data collected'
                             }
                         };
                         xhttp.send(formData);                                                   
                     }
+
+                    document.getElementById('first_name').value = '';
+                    document.getElementById('last_name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('file').value = '';
+
+
+
                 })
             })
         </script>
