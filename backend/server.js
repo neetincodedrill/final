@@ -13,13 +13,7 @@ const requestHandler = (req,res) => {
   res.setHeader('Content-Type','multipart/form-data') 
     if(req.method === "POST"){
       const form = formidable({ multiples: true });
-
       form.parse(req, (err, fields, files) => {  
-      if (err) {
-        res.writeHead(err.httpCode || 400, { 'Content-Type': 'text/plain' });
-        res.end(String(err));
-        return;
-      }
       console.log(fields)
       console.log(files)
       let first_name = fields.first_name;
@@ -30,46 +24,50 @@ const requestHandler = (req,res) => {
 
       //function to validate the data and files
       var fieldValidation = [
-            dataValidation(first_name,last_name,age),
-            imagevalidation(imageType),
-            emailvalidation(email),
+        dataValidation(first_name,last_name,age),
+        imagevalidation(imageType),
+        emailvalidation(email),
       ]
-      // console.log(fieldValidation[0],fieldValidation[1],fieldValidation[2])
+      //validation check for datatype
       if(fieldValidation[0] === true && fieldValidation[1] === true && fieldValidation[2] === true){
-        return MongoClient.connect(url,function(err,db){
+        MongoClient.connect(url,function(err,db){
           if(err) throw err;
           var dbo = db.db('mydb');
           var data = {
             image : files,
             field :fields
           }
-            const User =  dbo.collection('user')               
-            User.insertOne(data,
-              function(err,result){
-              if(err) throw err;
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-
-                }
-              )          
-             res.end(JSON.stringify({ fields, files }, null, 2));  
-        })      
-      }else {
+          const User =  dbo.collection('user') 
+          User.findOne({email : email},function(err,result){
+            if(result){
+              console.log('Dupliacte email')
+            }else{
+              return err
+            }
+          })              
+          User.insertOne(data,
+            function(err,result){
+            if(err) throw err;          
+              })                    
+        })  
+        const message = 'User Data collected'
+        res.writeHead(200);  
+        return res.end(JSON.stringify({ fields, files, message}, null, 2));    
+        }
+        else {
         //sending validation error
-        var error = ''
         var message = []
         for(i=0;i<fieldValidation.length;i++){        
-             if(typeof fieldValidation[i] === 'string'){
-                 message.push(fieldValidation[i])                                      
-                 }  
-                //  res.writeHead(400);    
-                //  res.write(error)                               
-             }    
-         console.log(message)
+          if(typeof fieldValidation[i] === 'string'){
+              message.push(fieldValidation[i])                                      
+            }
+          }    
+          console.log(message)
           res.writeHead(400);    
           res.write(JSON.stringify(message))      
           return res.end();
-      }   
-    });
+        }   
+      });
       }
       else if(req.method === 'GET'){
         MongoClient.connect(url,function(err,db){
@@ -79,14 +77,13 @@ const requestHandler = (req,res) => {
             return dbo.collection('user').find({}).toArray(function(err,result){
               if(err) throw err;   
               res.writeHead(200,{'Content-Type':'application/json'})         
-              res.end(JSON.stringify(result))
-              // console.log(result)           
+              res.end(JSON.stringify(result))           
             }) 
           }      
         })    
       }else{
         return "Only POST and GET request can be called"
-      }
+  }
 }
 
 const server =  http.createServer(requestHandler)

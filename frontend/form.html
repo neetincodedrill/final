@@ -157,7 +157,6 @@
             $(document).ready(function () {
                 $('form').submit(function (e) {
                     e.preventDefault();
-                    if (first_name != '' && last_name != '' && age != '' && gender != '' && city != '' && email != '') {
                         var first_name = document.getElementById('first_name').value;
                         var last_name = document.getElementById('last_name').value;
                         var age = document.getElementById('age').value;
@@ -180,37 +179,38 @@
                         var message = document.getElementById('message');
                         xhttp.onreadystatechange = function () {
                           
-                            if (this.readyState == 4 && this.status == 200) {
-                                console.log(this.responseText)
-                                var response = `<p>User data Collected</p>`;
-                                    message.innerHTML += response
-                            }else {
-                                //error response text
-                                console.log(this.responseText)
-
-                                // for(i=0;i<user.length;i++){
-                                    // var response = `<p>${user[0]}</p>`;
-                                    // message.innerHTML += response
-                                    for(i=0;i<this.responseText.length;i++){
-                                        console.log(this.response[i])
-                                    }
-                                }
-                               
-                            // }
-                        };
-                      
+                            if (xhttp.readyState == 4) {
+                                if(xhttp.status == 200){
+                                    validation(xhttp.responseText)
+                                // var response = `<p>User data Collected</p>`;
+                                //     message.innerHTML += response
+                                }else{
+                                   errorResponse(xhttp.responseText)
+                                }                             
+                            }                  
+                        };                    
                         xhttp.send(formData);                                                   
-                    }
-
-                    document.getElementById('first_name').value = '';
-                    document.getElementById('last_name').value = '';
-                    document.getElementById('email').value = '';
-                    document.getElementById('file').value = '';
-
-
-
+                        document.getElementById('first_name').value = '';
+                        document.getElementById('last_name').value = '';
+                        document.getElementById('email').value = '';
+                        document.getElementById('file').value = '';
                 })
             })
+
+            function validation(str){
+                let data = str;
+                console.log(str.message)
+            }
+
+            function errorResponse(error){
+                let err = error;
+                console.log(err)
+            //     for(i=0;i<err.length;i++){
+            //          console.log(err[i])
+            //         // var response = `<p>${user[0]}</p>`;
+            //         // message.innerHTML += response
+            // }
+        }
         </script>
     </body>
 </html>
