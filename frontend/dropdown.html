@@ -58,7 +58,8 @@
             <div class="container">
                 <h4>START FOR FREE</h4>
                 <h1>Create new account<span class="dot">.</span></h1>
-                <p>Already A Memeber? <span class="log">Log In</span></p>
+                <p class="member">Already A Memeber? <span class="log">Log In</span></p>
+                <p class="message" id="message"></p>
                 <form>
                     <div class="first-name">
                         <div class="input">
@@ -171,7 +172,7 @@
                         console.log(formData)
                         var type = file.files[0].type
     
-                        if(type === 'image/png' || type === 'image/jpg'){
+                        
                             var xhttp = new XMLHttpRequest();                     
                         xhttp.open('POST', "http://localhost:7000/", true);
                          
@@ -180,12 +181,16 @@
                                 alert('Insert successfully')
                             }
                         };
+                        document.getElementById('message').innerHTML = 'User data collected'
                         xhttp.send(formData);
-                        }  
-                        else{
-                            alert('file type is wrong')
-                        }           
+                        
+                              
                     }
+                    document.getElementById('first_name').value = '';
+                    document.getElementById('last_name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('file').value = '';
+
                 })
             })
         </script>

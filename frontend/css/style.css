@@ -114,7 +114,7 @@ main{
     border-radius: 15px;
 }
 
-.container .message{
+.container .message p{
     margin-bottom: 20px;
     color:white;
     margin-top: 0px;

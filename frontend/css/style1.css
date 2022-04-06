@@ -218,3 +218,13 @@ select option{
 select option:hover{
     background-color: #B7C8D6;
 }
+
+.container .message{
+    margin-bottom: 20px;
+    color:black;
+    margin-top: 0px;
+}
+
+.container .member{
+    margin-bottom: 20px;
+}

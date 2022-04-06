@@ -6,7 +6,6 @@ var formidable = require('formidable');
 const { dataValidation, emailvalidation,imagevalidation}  = require('./validation')
 
 const requestHandler = (req,res) => {
-    // console.log(jsonParser);
   res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Request-Method', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
@@ -22,6 +21,7 @@ const requestHandler = (req,res) => {
         return;
       }
       console.log(fields)
+      console.log(files)
       let first_name = fields.first_name;
       let last_name = fields.last_name;
       let age = fields.age;
@@ -29,47 +29,49 @@ const requestHandler = (req,res) => {
       let imageType = files.file.mimetype;
 
       //function to validate the data and files
-      console.log(dataValidation(first_name,last_name,age));
-    
-      console.log(imagevalidation(imageType));
-      MongoClient.connect(url,function(err,db){
-        if(err) throw err;
-        var dbo = db.db('mydb');
-        var data = {
-          image : files,
-          field :fields
-        }
-          const User =  dbo.collection('user')
-          console.log(emailvalidation(email,User))
-          User.findOne({email : email},function(err,user){
-            if(err){
-               console.log(err)
-            }
-            else if(user){
-                console.log(user)
-              // var err = new Error('A user with that email has already registers')
-              // err.status = 400;
-              // return next(err);
-            }else{
-               User.insertOne(data,
-                function(err,result){
-                  if(err) throw err;
-                  res.writeHead(200, { 'Content-Type': 'application/json' });
-                  console.log(result)
+      var fieldValidation = [
+            dataValidation(first_name,last_name,age),
+            imagevalidation(imageType),
+            emailvalidation(email),
+      ]
+      // console.log(fieldValidation[0],fieldValidation[1],fieldValidation[2])
+      if(fieldValidation[0] === true && fieldValidation[1] === true && fieldValidation[2] === true){
+        return MongoClient.connect(url,function(err,db){
+          if(err) throw err;
+          var dbo = db.db('mydb');
+          var data = {
+            image : files,
+            field :fields
+          }
+            const User =  dbo.collection('user')               
+            User.insertOne(data,
+              function(err,result){
+              if(err) throw err;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+
                 }
-                )
-                res.end(JSON.stringify({ fields, files }, null, 2));
-            }
-          })
-          
-      
-      
-     
-      })      
+              )          
+             res.end(JSON.stringify({ fields, files }, null, 2));  
+        })      
+      }else {
+        //sending validation error
+        var error = ''
+        var message = []
+        for(i=0;i<fieldValidation.length;i++){        
+             if(typeof fieldValidation[i] === 'string'){
+                 message.push(fieldValidation[i])                                      
+                 }  
+                //  res.writeHead(400);    
+                //  res.write(error)                               
+             }    
+         console.log(message)
+          res.writeHead(400);    
+          res.write(JSON.stringify(message))      
+          return res.end();
+      }   
     });
       }
       else if(req.method === 'GET'){
-        console.log('GET request');
         MongoClient.connect(url,function(err,db){
           if(err) throw err;
           var dbo = db.db('mydb');

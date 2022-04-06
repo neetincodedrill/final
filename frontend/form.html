@@ -60,7 +60,7 @@
                 <h4>START FOR FREE</h4>
                 <h1>Create new account<span class="dot">.</span></h1>
                 <p class="member">Already A Memeber? <span class="log">Log In</span></p>
-                <p class="message" id="message"></p>
+                <div class="message" id="message"></div>
                 <form>
                     <div class="first-name">
                         <div class="input">
@@ -125,7 +125,7 @@
                     <div class="email">
                         <div class="input">
                             <label>Email ID</label>
-                            <input type="email" name="email" id="email" required autocomplete="off"/>
+                            <input type="text" name="email" id="email" required autocomplete="off"/>
                         </div>
                         <div class="icon">
                             <i class="fa-solid fa-envelope"></i>
@@ -135,7 +135,7 @@
                     <div class="avatar">
                         <div class="input">
                             <label>Avatar Uploaded</label>
-                            <input type="file" id="file" name="file" required accept=".jpg,.png"/>
+                            <input type="file" id="file" name="file" required />
                         </div>
                         <div class="icon">
                             <i class="fa-solid fa-file-arrow-down"></i>
@@ -173,17 +173,32 @@
                         formData.append('gender',gender);
                         formData.append('city',city);
                         formData.append('email',email);
-                        console.log(formData)
+                        
                                           
                         var xhttp = new XMLHttpRequest();
                         xhttp.open('POST', "http://localhost:7000/", true);
-    
+                        var message = document.getElementById('message');
                         xhttp.onreadystatechange = function () {
+                          
                             if (this.readyState == 4 && this.status == 200) {
-                                // alert('Insert successfully');
-                                document.getElementById('message').innerHTML = 'User data collected'
-                            }
+                                console.log(this.responseText)
+                                var response = `<p>User data Collected</p>`;
+                                    message.innerHTML += response
+                            }else {
+                                //error response text
+                                console.log(this.responseText)
+
+                                // for(i=0;i<user.length;i++){
+                                    // var response = `<p>${user[0]}</p>`;
+                                    // message.innerHTML += response
+                                    for(i=0;i<this.responseText.length;i++){
+                                        console.log(this.response[i])
+                                    }
+                                }
+                               
+                            // }
                         };
+                      
                         xhttp.send(formData);                                                   
                     }
 
