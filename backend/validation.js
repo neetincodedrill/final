@@ -14,14 +14,20 @@ function dataValidation(first_name,last_name,age){
     }
 }
 
-function emailvalidation(email){
+function emailformatvalidation(email){
     var emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
     if(email.match(emailRegex)){
         return true;
-    } else{
-        return 'Email is in wrong format'
+    }else{
+        return 'Email format is wrong'
     } 
 }
+
+function emailduplicationvalidation(user,email){
+    const User = user.find({_id:"624d3146460094030a2bf273"})
+    return User  
+}
+
 
 function imagevalidation(imageType){
     if(imageType === 'image/png' || imageType === 'image/jpg'){
@@ -32,4 +38,4 @@ function imagevalidation(imageType){
 }
 
 
-module.exports = { dataValidation,emailvalidation,imagevalidation}
+module.exports = { dataValidation,emailformatvalidation,imagevalidation,emailduplicationvalidation}

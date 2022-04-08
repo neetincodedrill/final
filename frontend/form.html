@@ -200,11 +200,13 @@
             function validation(str){
                 let data = str;
                 console.log(str.message)
+                document.getElementById('message').innerHTML = data.message
             }
 
             function errorResponse(error){
                 let err = error;
-                console.log(err)
+                console.log(JSON.parse(err))
+                document.getElementById('message').innerHTML = err
             //     for(i=0;i<err.length;i++){
             //          console.log(err[i])
             //         // var response = `<p>${user[0]}</p>`;
