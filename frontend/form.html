@@ -181,6 +181,7 @@
                           
                             if (xhttp.readyState == 4) {
                                 if(xhttp.status == 200){
+                                    console.log(xhttp.responseText);
                                     validation(xhttp.responseText)
                                 // var response = `<p>User data Collected</p>`;
                                 //     message.innerHTML += response
@@ -198,8 +199,8 @@
             })
 
             function validation(str){
-                let data = str;
-                console.log(str.message)
+                let data = JSON.parse(str);
+                
                 document.getElementById('message').innerHTML = data.message
             }
 
