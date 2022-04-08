@@ -24,7 +24,15 @@ function emailformatvalidation(email){
 }
 
 function emailduplicationvalidation(user,email){
-    const User = user.find({_id:"624d3146460094030a2bf273"})
+    const User = user.find({"field.email":email});
+
+    User.toArray(function(err,result){
+        console.log("printing result");
+        console.log(result);       
+        console.log("=================");  
+      }) 
+    console.log(User);
+    console.log("before reutrning");
     return User  
 }
 

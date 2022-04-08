@@ -12,7 +12,7 @@ const requestHandler = (req,res) => {
 	res.setHeader('Access-Control-Request-Method', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'POST');
 	res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Content-Type','multipart/form-data') 
+  res.setHeader('Content-Type','application/json') 
     if(req.method === "POST"){
       const form = formidable({ multiples: true });
       form.parse(req, (err, fields, files) => {  
@@ -21,7 +21,7 @@ const requestHandler = (req,res) => {
         // var rawData = fs.readFileSync(oldPath)
         // console.log(oldPath,newpath,rawData);
       // console.log(fields)
-      console.log(files)
+     // console.log(files)
       let first_name = fields.first_name;
       let last_name = fields.last_name;
       let age = fields.age;
@@ -38,13 +38,14 @@ const requestHandler = (req,res) => {
         //define collection
         var User =  dbo.collection('user')
         //function to validate the data and files
+      //  console.log(emailduplicationvalidation(User,email));
         var fieldValidation = [
           dataValidation(first_name,last_name,age),
           imagevalidation(imageType),
           emailformatvalidation(email),
           emailduplicationvalidation(User,email)
         ]
-        console.log(fieldValidation[3])
+      //  console.log(fieldValidation[3])
         //validation check 
         if(fieldValidation[0] === true && fieldValidation[1] === true && fieldValidation[2] === true ){    
           User.insertOne(data,
@@ -54,7 +55,7 @@ const requestHandler = (req,res) => {
        
         const message = 'User Data collected'
         res.writeHead(200);  
-        return res.end(JSON.stringify({ fields, files, message}, null, 2));    
+        return res.end(JSON.stringify({"message":message}));
         }
         else {
         //sending validation error
@@ -76,8 +77,9 @@ const requestHandler = (req,res) => {
         MongoClient.connect(url,function(err,db){
           if(err) throw err;
           var dbo = db.db('mydb');
+          var query = { "field.email" : "arvind@gmail.com" };
           if(dbo){
-            return dbo.collection('user').find({}).toArray(function(err,result){
+            return dbo.collection('user').find(query).toArray(function(err,result){
               if(err) throw err;   
               res.writeHead(200,{'Content-Type':'application/json'})         
               res.end(JSON.stringify(result))           
